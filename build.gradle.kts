@@ -14,9 +14,13 @@ group = mavenGroup
 dependencies {
     implementation(platform(libs.bom))
 
+    api(libs.kotlin.logging)
+
+    api("org.springframework.boot:spring-boot-starter")
+    api("org.freemarker:freemarker")
+
     // TEST ---------
-    testImplementation("org.assertj:assertj-core")
-    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
