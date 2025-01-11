@@ -19,7 +19,7 @@ import java.util.Locale
 class TemplatingService(
     @Value("\${app.templating.classpath-dir:/freemarker}")
     private val templateDir: String,
-    @Value("\${app.templating.freemarker-version:2.3.33}")
+    @Value("\${app.templating.freemarker-version:2.3.34}")
     private val freemarkerVersion: String,
 ) {
 
