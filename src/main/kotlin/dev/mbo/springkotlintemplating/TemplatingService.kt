@@ -46,6 +46,13 @@ class TemplatingService(
     }
 
     /**
+     * Wrapper for #getText(ClasspathTemplate,Locale,Map)
+     */
+    fun getText(info: TemplateInfo, locale: Locale? = null): String {
+        return getText(template = info.template, locale = locale, data = info.data)
+    }
+
+    /**
      * Get a text from file template with replaced values from data map.
      *
      * @param template Config of the file in the configured classpath folder including the ending.
@@ -56,19 +63,20 @@ class TemplatingService(
      */
     fun getText(
         template: ClasspathTemplate,
-        locale: Locale = DEFAULT_LOCALE,
+        locale: Locale? = null,
         data: Map<String, Any?> = emptyMap()
     ): String {
+        val usedLocale = locale ?: DEFAULT_LOCALE
         val freemarkerTemplate = config.getTemplate(
             template.getFilename().replace(
                 "%LANG%",
-                locale.language
+                usedLocale.language
             )
         )
         return mapText(
             template.getInitialBufferLength(),
             freemarkerTemplate,
-            locale,
+            usedLocale,
             data
         )
     }

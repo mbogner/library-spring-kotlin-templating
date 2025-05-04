@@ -1,6 +1,6 @@
 package dev.mbo.springkotlintemplating
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -13,11 +13,16 @@ class TemplatingServiceTest @Autowired constructor(
 
     @Test
     fun getText() {
-        val uuid = UUID.randomUUID()
-        val result = templatingService.getText(
-            template = LocalTemplate.TEST,
-            data = mapOf("ts" to uuid)
+        val info = TemplateInfo(
+            LocalTemplate.TEST, mapOf("ts" to UUID.randomUUID())
         )
-        Assertions.assertThat(result).startsWith("This is a test @ $uuid")
+        val result = templatingService.getText(
+            template = info.template,
+            data = info.data
+        )
+        assertThat(result).startsWith("This is a test @ ${info.data["ts"]}")
+
+        val result2 = templatingService.getText(info)
+        assertThat(result).isEqualTo(result2)
     }
 }
