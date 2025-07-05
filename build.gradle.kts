@@ -3,7 +3,6 @@ plugins {
     id("org.jetbrains.dokka")
     jacoco
     id("org.sonarqube")
-    signing // required for maven central
     id("maven-publish")
     id("net.researchgate.release")
     id("org.jreleaser")
@@ -77,10 +76,13 @@ tasks {
         archiveClassifier.set("javadoc")
         from(named<org.jetbrains.dokka.gradle.DokkaTask>("dokkaJavadoc").get().outputDirectory)
     }
-
+    
+    named("jreleaserFullRelease") {
+        dependsOn("publish")
+    }
+    
     named("afterReleaseBuild") {
         dependsOn(
-            "signMavenPublication",
             "publishToMavenLocal",
             "jreleaserFullRelease"
         )
@@ -110,8 +112,19 @@ jreleaser {
     deploy {
         maven {
             mavenCentral {
-                active.set(org.jreleaser.model.Active.ALWAYS)
+                register("sonatype") {
+                    active.set(org.jreleaser.model.Active.ALWAYS)
+                    url.set("https://central.sonatype.com/api/v1/publisher")
+                    snapshotSupported.set(true)
+                    stagingRepository("${layout.buildDirectory.get()}/staging-deploy")
+                }
             }
+        }
+    }
+    release {
+        github {
+            tagName.set("{{projectVersion}}")
+            releaseName.set("{{projectVersion}}")
         }
     }
 }
@@ -157,8 +170,10 @@ publishing {
             }
         }
     }
-}
-
-signing {
-    sign(publishing.publications["maven"])
+    repositories {
+        maven {
+            name = "staging"
+            url = uri("${layout.buildDirectory.get()}/staging-deploy")
+        }
+    }
 }
